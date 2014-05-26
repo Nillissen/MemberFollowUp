@@ -1,0 +1,19 @@
+unit MemberFollowUp.Baas.Keys;
+
+interface
+
+{ WARNING: DO NOT INCLUDE THIS IN THE REPOSITORY COMMITS }
+
+const
+  MEMBERFOLLOWUP_PARSE_APPLICATIONID = '';
+  MEMBERFOLLOWUP_PARSE_MASTERKEY     = '';
+  MEMBERFOLLOWUP_PARSE_RESTAPIKEY    = '';
+
+
+//const
+//  MEMBERFOLLOWUP_KINVEY_
+
+
+implementation
+
+end.
