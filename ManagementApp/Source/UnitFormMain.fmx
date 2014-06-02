@@ -9,8 +9,7 @@ object FormMain: TFormMain
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop, iPhone, iPad]
-  OnCreate = FormCreate
-  OnDestroy = FormDestroy
+  OnShow = FormShow
   DesignerMobile = False
   DesignerWidth = 0
   DesignerHeight = 0
@@ -24,7 +23,7 @@ object FormMain: TFormMain
     Margins.Top = 5.000000000000000000
     Margins.Right = 5.000000000000000000
     Margins.Bottom = 5.000000000000000000
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 5
     Width = 883.000000000000000000
     object TabItemAreas: TTabItem
@@ -32,10 +31,149 @@ object FormMain: TFormMain
         item
         end>
       Height = 24.000000000000000000
-      IsSelected = True
+      IsSelected = False
       TabOrder = 0
       Text = 'Areas'
       Width = 46.000000000000000000
+      object Panel2: TPanel
+        Align = Top
+        Height = 41.000000000000000000
+        Width = 883.000000000000000000
+        TabOrder = 6
+        object Button1: TButton
+          Action = ActionRefreshAreas
+          Align = Right
+          Height = 31.000000000000000000
+          Margins.Left = 5.000000000000000000
+          Margins.Top = 5.000000000000000000
+          Margins.Right = 5.000000000000000000
+          Margins.Bottom = 5.000000000000000000
+          Position.X = 798.000000000000000000
+          Position.Y = 5.000000000000000000
+          TabOrder = 5
+          Width = 80.000000000000000000
+        end
+        object Button2: TButton
+          Action = ActionNewAreas
+          Align = Left
+          Height = 31.000000000000000000
+          Margins.Left = 5.000000000000000000
+          Margins.Top = 5.000000000000000000
+          Margins.Right = 5.000000000000000000
+          Margins.Bottom = 5.000000000000000000
+          Position.X = 5.000000000000000000
+          Position.Y = 5.000000000000000000
+          TabOrder = 7
+          Width = 60.000000000000000000
+        end
+        object Button3: TButton
+          Action = ActionEditAreas
+          Align = Left
+          Enabled = False
+          Height = 31.000000000000000000
+          Margins.Left = 5.000000000000000000
+          Margins.Top = 5.000000000000000000
+          Margins.Right = 5.000000000000000000
+          Margins.Bottom = 5.000000000000000000
+          Position.X = 75.000000000000000000
+          Position.Y = 5.000000000000000000
+          TabOrder = 6
+          Width = 60.000000000000000000
+        end
+        object Button4: TButton
+          Action = ActionDeleteAreas
+          Align = Left
+          Enabled = False
+          Height = 31.000000000000000000
+          Margins.Left = 5.000000000000000000
+          Margins.Top = 5.000000000000000000
+          Margins.Right = 5.000000000000000000
+          Margins.Bottom = 5.000000000000000000
+          Position.X = 145.000000000000000000
+          Position.Y = 5.000000000000000000
+          StyleLookup = 'ButtonDeleteFamilyStyle1'
+          TabOrder = 9
+          Width = 60.000000000000000000
+        end
+      end
+      object ListBoxAreas: TListBox
+        Align = Client
+        Height = 502.000000000000000000
+        Margins.Left = 4.000000000000000000
+        Margins.Top = 4.000000000000000000
+        Margins.Right = 4.000000000000000000
+        Margins.Bottom = 4.000000000000000000
+        PopupMenu = PopupMenuAreas
+        TabOrder = 0
+        Width = 875.000000000000000000
+        OnDblClick = ListBoxAreasDblClick
+        ItemHeight = 40.000000000000000000
+        DefaultItemStyles.ItemStyle = ''
+        DefaultItemStyles.GroupHeaderStyle = ''
+        DefaultItemStyles.GroupFooterStyle = ''
+        OnChange = ListBoxAreasChange
+        object PopupMenuAreas: TPopupMenu
+          Left = 82
+          Top = 427
+          object MenuItem2: TMenuItem
+            Action = ActionEditAreas
+            Enabled = False
+          end
+          object MenuItem3: TMenuItem
+            Action = ActionDeleteAreas
+            Enabled = False
+          end
+          object MenuItem4: TMenuItem
+            Text = '-'
+          end
+          object MenuItem5: TMenuItem
+            Action = ActionRefreshAreas
+          end
+        end
+        object PopupMenuMembers: TPopupMenu
+          Left = 82
+          Top = 491
+          object MenuItem6: TMenuItem
+            Action = ActionEditMember
+            Enabled = False
+          end
+          object MenuItem7: TMenuItem
+            Action = ActionDeleteMembers
+            Enabled = False
+          end
+          object MenuItem8: TMenuItem
+            Text = '-'
+          end
+          object MenuItem9: TMenuItem
+            Action = ActionRefreshMembers
+          end
+        end
+        object PopupMenuFollowupers: TPopupMenu
+          Left = 242
+          Top = 491
+          object MenuItem10: TMenuItem
+            Action = ActionEditFollowuper
+            Enabled = False
+          end
+          object MenuItem11: TMenuItem
+            Action = ActionDeleteFollowupers
+            Enabled = False
+          end
+          object MenuItem12: TMenuItem
+            Text = '-'
+          end
+          object MenuItem13: TMenuItem
+            Action = ActionRefreshFollowupers
+          end
+        end
+        object SearchBox2: TSearchBox
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          Align = Top
+          TabOrder = 0
+          Width = 875.000000000000000000
+          Height = 22.000000000000000000
+        end
+      end
     end
     object TabItemFamilies: TTabItem
       CustomIcon = <
@@ -52,7 +190,7 @@ object FormMain: TFormMain
         Width = 883.000000000000000000
         TabOrder = 6
         object ButtonRefreshFamilies: TButton
-          Action = ActionRefreshFamily
+          Action = ActionRefreshMemberGroups
           Align = Right
           Height = 31.000000000000000000
           Margins.Left = 5.000000000000000000
@@ -65,7 +203,7 @@ object FormMain: TFormMain
           Width = 80.000000000000000000
         end
         object ButtonAddFamily: TButton
-          Action = ActionAddFamily
+          Action = ActionNewMemberGroups
           Align = Left
           Height = 31.000000000000000000
           Margins.Left = 5.000000000000000000
@@ -78,7 +216,7 @@ object FormMain: TFormMain
           Width = 60.000000000000000000
         end
         object ButtonEditFamily: TButton
-          Action = ActionEditFamily
+          Action = ActionEditMemberGroups
           Align = Left
           Enabled = False
           Height = 31.000000000000000000
@@ -92,7 +230,7 @@ object FormMain: TFormMain
           Width = 60.000000000000000000
         end
         object ButtonDeleteFamily: TButton
-          Action = ActionDeleteFamily
+          Action = ActionDeleteMemberGroups
           Align = Left
           Enabled = False
           Height = 31.000000000000000000
@@ -107,22 +245,22 @@ object FormMain: TFormMain
           Width = 60.000000000000000000
         end
       end
-      object ListBox1: TListBox
+      object ListBoxMemberGroups: TListBox
         Align = Client
         Height = 502.000000000000000000
         Margins.Left = 4.000000000000000000
         Margins.Top = 4.000000000000000000
         Margins.Right = 4.000000000000000000
         Margins.Bottom = 4.000000000000000000
-        PopupMenu = PopupMenuFamilies
+        PopupMenu = PopupMenuMemberGroups
         TabOrder = 0
         Width = 875.000000000000000000
-        OnDblClick = ListBox1DblClick
+        OnDblClick = ListBoxMemberGroupsDblClick
         ItemHeight = 40.000000000000000000
         DefaultItemStyles.ItemStyle = ''
         DefaultItemStyles.GroupHeaderStyle = ''
         DefaultItemStyles.GroupFooterStyle = ''
-        OnChange = ListBox1Change
+        OnChange = ListBoxMemberGroupsChange
         object SearchBox1: TSearchBox
           Touch.InteractiveGestures = [LongTap, DoubleTap]
           Align = Top
@@ -141,16 +279,186 @@ object FormMain: TFormMain
       TabOrder = 0
       Text = 'Members'
       Width = 67.000000000000000000
+      object ListBoxMembers: TListBox
+        Align = Client
+        Height = 502.000000000000000000
+        Margins.Left = 4.000000000000000000
+        Margins.Top = 4.000000000000000000
+        Margins.Right = 4.000000000000000000
+        Margins.Bottom = 4.000000000000000000
+        PopupMenu = PopupMenuMembers
+        TabOrder = 0
+        Width = 875.000000000000000000
+        OnDblClick = ListBoxMembersDblClick
+        ItemHeight = 40.000000000000000000
+        DefaultItemStyles.ItemStyle = ''
+        DefaultItemStyles.GroupHeaderStyle = ''
+        DefaultItemStyles.GroupFooterStyle = ''
+        OnChange = ListBoxMembersChange
+        object SearchBox4: TSearchBox
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          Align = Top
+          TabOrder = 0
+          Width = 875.000000000000000000
+          Height = 22.000000000000000000
+        end
+      end
+      object Panel4: TPanel
+        Align = Top
+        Height = 41.000000000000000000
+        Width = 883.000000000000000000
+        TabOrder = 6
+        object Button9: TButton
+          Action = ActionRefreshMembers
+          Align = Right
+          Height = 31.000000000000000000
+          Margins.Left = 5.000000000000000000
+          Margins.Top = 5.000000000000000000
+          Margins.Right = 5.000000000000000000
+          Margins.Bottom = 5.000000000000000000
+          Position.X = 798.000000000000000000
+          Position.Y = 5.000000000000000000
+          TabOrder = 5
+          Width = 80.000000000000000000
+        end
+        object Button10: TButton
+          Action = ActionNewMember
+          Align = Left
+          Height = 31.000000000000000000
+          Margins.Left = 5.000000000000000000
+          Margins.Top = 5.000000000000000000
+          Margins.Right = 5.000000000000000000
+          Margins.Bottom = 5.000000000000000000
+          Position.X = 5.000000000000000000
+          Position.Y = 5.000000000000000000
+          TabOrder = 7
+          Width = 60.000000000000000000
+        end
+        object Button11: TButton
+          Action = ActionEditMember
+          Align = Left
+          Enabled = False
+          Height = 31.000000000000000000
+          Margins.Left = 5.000000000000000000
+          Margins.Top = 5.000000000000000000
+          Margins.Right = 5.000000000000000000
+          Margins.Bottom = 5.000000000000000000
+          Position.X = 75.000000000000000000
+          Position.Y = 5.000000000000000000
+          TabOrder = 6
+          Width = 60.000000000000000000
+        end
+        object Button12: TButton
+          Action = ActionDeleteMembers
+          Align = Left
+          Enabled = False
+          Height = 31.000000000000000000
+          Margins.Left = 5.000000000000000000
+          Margins.Top = 5.000000000000000000
+          Margins.Right = 5.000000000000000000
+          Margins.Bottom = 5.000000000000000000
+          Position.X = 145.000000000000000000
+          Position.Y = 5.000000000000000000
+          StyleLookup = 'ButtonDeleteFamilyStyle1'
+          TabOrder = 9
+          Width = 60.000000000000000000
+        end
+      end
     end
     object TabItemFollowupers: TTabItem
       CustomIcon = <
         item
         end>
       Height = 24.000000000000000000
-      IsSelected = False
+      IsSelected = True
       TabOrder = 0
       Text = 'Followupers'
       Width = 81.000000000000000000
+      object Panel3: TPanel
+        Align = Top
+        Height = 41.000000000000000000
+        Width = 883.000000000000000000
+        TabOrder = 6
+        object Button5: TButton
+          Action = ActionRefreshFollowupers
+          Align = Right
+          Height = 31.000000000000000000
+          Margins.Left = 5.000000000000000000
+          Margins.Top = 5.000000000000000000
+          Margins.Right = 5.000000000000000000
+          Margins.Bottom = 5.000000000000000000
+          Position.X = 798.000000000000000000
+          Position.Y = 5.000000000000000000
+          TabOrder = 5
+          Width = 80.000000000000000000
+        end
+        object Button6: TButton
+          Action = ActionNewFollowuper
+          Align = Left
+          Height = 31.000000000000000000
+          Margins.Left = 5.000000000000000000
+          Margins.Top = 5.000000000000000000
+          Margins.Right = 5.000000000000000000
+          Margins.Bottom = 5.000000000000000000
+          Position.X = 5.000000000000000000
+          Position.Y = 5.000000000000000000
+          TabOrder = 7
+          Width = 60.000000000000000000
+        end
+        object Button7: TButton
+          Action = ActionEditFollowuper
+          Align = Left
+          Enabled = False
+          Height = 31.000000000000000000
+          Margins.Left = 5.000000000000000000
+          Margins.Top = 5.000000000000000000
+          Margins.Right = 5.000000000000000000
+          Margins.Bottom = 5.000000000000000000
+          Position.X = 75.000000000000000000
+          Position.Y = 5.000000000000000000
+          TabOrder = 6
+          Width = 60.000000000000000000
+        end
+        object Button8: TButton
+          Action = ActionDeleteFollowupers
+          Align = Left
+          Enabled = False
+          Height = 31.000000000000000000
+          Margins.Left = 5.000000000000000000
+          Margins.Top = 5.000000000000000000
+          Margins.Right = 5.000000000000000000
+          Margins.Bottom = 5.000000000000000000
+          Position.X = 145.000000000000000000
+          Position.Y = 5.000000000000000000
+          StyleLookup = 'ButtonDeleteFamilyStyle1'
+          TabOrder = 9
+          Width = 60.000000000000000000
+        end
+      end
+      object ListBoxFollowupers: TListBox
+        Align = Client
+        Height = 502.000000000000000000
+        Margins.Left = 4.000000000000000000
+        Margins.Top = 4.000000000000000000
+        Margins.Right = 4.000000000000000000
+        Margins.Bottom = 4.000000000000000000
+        PopupMenu = PopupMenuFollowupers
+        TabOrder = 0
+        Width = 875.000000000000000000
+        OnDblClick = ListBoxFollowupersDblClick
+        ItemHeight = 40.000000000000000000
+        DefaultItemStyles.ItemStyle = ''
+        DefaultItemStyles.GroupHeaderStyle = ''
+        DefaultItemStyles.GroupFooterStyle = ''
+        OnChange = ListBoxFollowupersChange
+        object SearchBox3: TSearchBox
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          Align = Top
+          TabOrder = 0
+          Width = 875.000000000000000000
+          Height = 22.000000000000000000
+        end
+      end
     end
     object TabItemFollowups: TTabItem
       CustomIcon = <
@@ -163,22 +471,22 @@ object FormMain: TFormMain
       Width = 70.000000000000000000
     end
   end
-  object PopupMenuFamilies: TPopupMenu
-    Left = 722
-    Top = 515
+  object PopupMenuMemberGroups: TPopupMenu
+    Left = 242
+    Top = 427
     object MenuItemEdit: TMenuItem
-      Action = ActionEditFamily
+      Action = ActionEditMemberGroups
       Enabled = False
     end
     object MenuItemDelete: TMenuItem
-      Action = ActionDeleteFamily
+      Action = ActionDeleteMemberGroups
       Enabled = False
     end
     object MenuItemSpacer1: TMenuItem
       Text = '-'
     end
     object MenuItem1: TMenuItem
-      Action = ActionRefreshFamily
+      Action = ActionRefreshMemberGroups
     end
   end
   object StyleBook: TStyleBook
@@ -1625,36 +1933,74 @@ object FormMain: TFormMain
       697369626C6508064865696768740500000000000000C804400756697369626C
       65080557696474680500000000000000C804400000}
   end
-  object ParseProvider: TParseProvider
-    ApiVersion = '1'
-    Left = 32
-    Top = 520
-  end
   object ActionList: TActionList
     Left = 826
     Top = 515
-    object ActionEditFamily: TAction
-      Text = 'Edit'
+    object ActionNewAreas: TAction
+      Text = 'New...'
+    end
+    object ActionEditAreas: TAction
+      Text = 'Edit...'
       Enabled = False
-      OnExecute = ActionEditFamilyExecute
     end
-    object ActionAddFamily: TAction
-      Text = 'New'
-      OnExecute = ActionAddFamilyExecute
-    end
-    object ActionDeleteFamily: TAction
+    object ActionDeleteAreas: TAction
       Text = 'Delete'
       Enabled = False
-      OnExecute = ActionDeleteFamilyExecute
+      OnExecute = ActionDeleteAreasExecute
     end
-    object ActionRefreshFamily: TAction
+    object ActionRefreshAreas: TAction
       Text = 'Refresh'
-      OnExecute = ActionRefreshFamilyExecute
+      OnExecute = ActionRefreshAreasExecute
     end
-  end
-  object BackendStorage: TBackendStorage
-    Provider = ParseProvider
-    Left = 122
-    Top = 515
+    object ActionNewMemberGroups: TAction
+      Text = 'New...'
+      OnExecute = ActionNewMemberGroupsExecute
+    end
+    object ActionEditMemberGroups: TAction
+      Text = 'Edit...'
+      Enabled = False
+      OnExecute = ActionEditMemberGroupsExecute
+    end
+    object ActionDeleteMemberGroups: TAction
+      Text = 'Delete'
+      Enabled = False
+      OnExecute = ActionDeleteMemberGroupsExecute
+    end
+    object ActionRefreshMemberGroups: TAction
+      Text = 'Refresh'
+      OnExecute = ActionRefreshMemberGroupsExecute
+    end
+    object ActionNewMember: TAction
+      Text = 'New...'
+    end
+    object ActionEditMember: TAction
+      Text = 'Edit...'
+      Enabled = False
+    end
+    object ActionDeleteMembers: TAction
+      Text = 'Delete'
+      Enabled = False
+      OnExecute = ActionDeleteMembersExecute
+    end
+    object ActionRefreshMembers: TAction
+      Text = 'Refresh'
+      OnExecute = ActionRefreshMembersExecute
+    end
+    object ActionNewFollowuper: TAction
+      Text = 'New...'
+    end
+    object ActionEditFollowuper: TAction
+      Text = 'Edit...'
+      Enabled = False
+    end
+    object ActionDeleteFollowupers: TAction
+      Text = 'Delete'
+      Enabled = False
+      OnExecute = ActionDeleteFollowupersExecute
+    end
+    object ActionRefreshFollowupers: TAction
+      Text = 'Refresh'
+      OnExecute = ActionRefreshFollowupersExecute
+    end
   end
 end

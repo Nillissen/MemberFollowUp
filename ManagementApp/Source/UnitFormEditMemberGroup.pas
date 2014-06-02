@@ -39,13 +39,12 @@ type
   private
     FSelectedItem : TMemberGroup;
 
-    FOnAddItem    : TBaasItemNotify;
     FOnUpdateItem : TBaasItemNotify;
 
-    procedure SetSelectedItem(const AItem: TMemberGroup);
+    function GetSelectedItem: TBaasItem;
+    procedure SetSelectedItem(const AItem: TBaasItem);
   public
-    property Item : TMemberGroup read FSelectedItem write SetSelectedItem;
-    property OnAddItem : TBaasItemNotify read FOnAddItem write FOnAddItem;
+    property Item : TBaasItem read GetSelectedItem write SetSelectedItem;
     property OnUpdateItem : TBaasItemNotify read FOnUpdateItem write FOnUpdateItem;
   end;
 
@@ -60,7 +59,6 @@ implementation
 procedure TFormEditMemberGroup.FormCreate(Sender: TObject);
 begin
     FSelectedItem := nil;
-    FOnAddItem    := nil;
     FOnUpdateItem := nil;
 end;
 
@@ -82,9 +80,9 @@ begin
     LItem.NoHomeVisit  := CheckBoxNoHomeVisit.IsChecked;
 
     if FSelectedItem = nil then
-        FOnAddItem(Self, LItem)
+        FOnUpdateItem(Self, TBaasItemNotifyEventType.Add, LItem)
     else
-        FOnUpdateItem(Self, LItem);
+        FOnUpdateItem(Self, TBaasItemNotifyEventType.Update, LItem);
 
     Self.Close;
 end;
@@ -94,9 +92,14 @@ begin
     Self.Close;
 end;
 
-procedure TFormEditMemberGroup.SetSelectedItem(const AItem: TMemberGroup);
+function TFormEditMemberGroup.GetSelectedItem: TBaasItem;
 begin
-    FSelectedItem := AItem;
+    Result := FSelectedItem as TBaasItem;
+end;
+
+procedure TFormEditMemberGroup.SetSelectedItem(const AItem: TBaasItem);
+begin
+    FSelectedItem := AItem as TMemberGroup;
 
     Self.Caption    := 'Edit Member Family';
     ButtonSave.Text := 'Update';

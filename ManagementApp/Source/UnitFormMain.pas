@@ -3,27 +3,23 @@ unit UnitFormMain;
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants, 
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants, System.StrUtils,
   FMX.Types, FMX.Graphics, FMX.Objects, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
-  IPPeerClient, REST.OpenSSL, REST.Backend.ParseProvider,
-  REST.Backend.ServiceTypes, REST.Backend.MetaTypes, System.JSON,
-  REST.Backend.ParseServices, FMX.ListView.Types, FMX.ListView,
-  Data.Bind.Components, Data.Bind.ObjectScope, REST.Backend.BindSource,
-  REST.Backend.ServiceComponents, FMX.Layouts, FMX.Memo, FMX.TabControl,
+  FMX.ListView.Types, FMX.ListView, FMX.Layouts, FMX.Memo, FMX.TabControl,
   FMX.Edit, System.Actions, FMX.ActnList, FMX.Menus, FMX.ListBox,
-  REST.Backend.Providers,
   //  member followup includes...
-  MemberFollowUp.Baas.Keys,
+  MemberFollowUp.Baas.Base,
+  MemberFollowUp.Baas.Classes,
   MemberFollowUp.Baas.Areas,
-  MemberFollowUp.Baas.MemberGroups,
   MemberFollowUp.Baas.Followupers,
+  MemberFollowUp.Baas.MemberGroups,
+  MemberFollowUp.Baas.Members,
   //  local includes...
   UnitFormEditMemberGroup;
 
 
 type
   TFormMain = class(TForm)
-    ParseProvider: TParseProvider;
     TabControl1: TTabControl;
     TabItemFamilies: TTabItem;
     TabItemPersons: TTabItem;
@@ -34,36 +30,89 @@ type
     ButtonAddFamily: TButton;
     ButtonEditFamily: TButton;
     ActionList: TActionList;
-    ActionEditFamily: TAction;
-    PopupMenuFamilies: TPopupMenu;
+    ActionEditMemberGroups: TAction;
+    PopupMenuMemberGroups: TPopupMenu;
     MenuItemEdit: TMenuItem;
-    ActionAddFamily: TAction;
-    BackendStorage: TBackendStorage;
+    ActionNewMemberGroups: TAction;
     ButtonDeleteFamily: TButton;
-    ActionDeleteFamily: TAction;
+    ActionDeleteMemberGroups: TAction;
     MenuItemDelete: TMenuItem;
     MenuItem1: TMenuItem;
-    ActionRefreshFamily: TAction;
+    ActionRefreshMemberGroups: TAction;
     MenuItemSpacer1: TMenuItem;
     StyleBook: TStyleBook;
-    ListBox1: TListBox;
+    ListBoxMemberGroups: TListBox;
     SearchBox1: TSearchBox;
     TabItemAreas: TTabItem;
-    procedure ActionEditFamilyExecute(Sender: TObject);
-    procedure ActionAddFamilyExecute(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
-    procedure ActionRefreshFamilyExecute(Sender: TObject);
-    procedure ListBox1DblClick(Sender: TObject);
-    procedure ListBox1Change(Sender: TObject);
-    procedure ActionDeleteFamilyExecute(Sender: TObject);
+    ActionRefreshAreas: TAction;
+    Panel2: TPanel;
+    Button1: TButton;
+    Button2: TButton;
+    Button3: TButton;
+    Button4: TButton;
+    ListBoxAreas: TListBox;
+    SearchBox2: TSearchBox;
+    ActionRefreshFollowupers: TAction;
+    Panel3: TPanel;
+    Button5: TButton;
+    Button6: TButton;
+    Button7: TButton;
+    Button8: TButton;
+    ListBoxFollowupers: TListBox;
+    SearchBox3: TSearchBox;
+    ActionRefreshMembers: TAction;
+    ListBoxMembers: TListBox;
+    SearchBox4: TSearchBox;
+    Panel4: TPanel;
+    Button9: TButton;
+    Button10: TButton;
+    Button11: TButton;
+    Button12: TButton;
+    ActionDeleteAreas: TAction;
+    ActionEditAreas: TAction;
+    ActionNewAreas: TAction;
+    ActionNewMember: TAction;
+    ActionEditMember: TAction;
+    ActionDeleteMembers: TAction;
+    ActionNewFollowuper: TAction;
+    ActionEditFollowuper: TAction;
+    ActionDeleteFollowupers: TAction;
+    PopupMenuAreas: TPopupMenu;
+    MenuItem2: TMenuItem;
+    MenuItem3: TMenuItem;
+    MenuItem4: TMenuItem;
+    MenuItem5: TMenuItem;
+    PopupMenuMembers: TPopupMenu;
+    MenuItem6: TMenuItem;
+    MenuItem7: TMenuItem;
+    MenuItem8: TMenuItem;
+    MenuItem9: TMenuItem;
+    PopupMenuFollowupers: TPopupMenu;
+    MenuItem10: TMenuItem;
+    MenuItem11: TMenuItem;
+    MenuItem12: TMenuItem;
+    MenuItem13: TMenuItem;
+    procedure ActionEditMemberGroupsExecute(Sender: TObject);
+    procedure ActionNewMemberGroupsExecute(Sender: TObject);
+    procedure ActionRefreshMemberGroupsExecute(Sender: TObject);
+    procedure ListBoxMemberGroupsDblClick(Sender: TObject);
+    procedure ListBoxMemberGroupsChange(Sender: TObject);
+    procedure ActionDeleteMemberGroupsExecute(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure ActionRefreshAreasExecute(Sender: TObject);
+    procedure ActionRefreshFollowupersExecute(Sender: TObject);
+    procedure ActionRefreshMembersExecute(Sender: TObject);
+    procedure ActionDeleteAreasExecute(Sender: TObject);
+    procedure ListBoxAreasChange(Sender: TObject);
+    procedure ListBoxAreasDblClick(Sender: TObject);
+    procedure ListBoxMembersChange(Sender: TObject);
+    procedure ListBoxMembersDblClick(Sender: TObject);
+    procedure ActionDeleteMembersExecute(Sender: TObject);
+    procedure ActionDeleteFollowupersExecute(Sender: TObject);
+    procedure ListBoxFollowupersChange(Sender: TObject);
+    procedure ListBoxFollowupersDblClick(Sender: TObject);
   private
-    FAreas        : TAreaCollection;
-    FMemberGroups : TMemberGroupCollection;
-    FFollowupers  : TFollowuperCollection;
-
-    procedure ProcessMemberGroupOnAddEvent(ASender: TObject; const AItem: TBaasItem);
-    procedure ProcessMemberGroupOnUpdateEvent(ASender: TObject; const AItem: TBaasItem);
+    procedure ProcessMemberGroupOnUpdateEvent(ASender: TObject; const EventType: TBaasItemNotifyEventType; const AItem: TBaasItem);
   end;
 
 var
@@ -74,119 +123,258 @@ implementation
 {$R *.fmx}
 
 
-function GetJsonValue(AObject: TJSONValue; const AName: String; const ADefaultValue: String = ''): String;
-var
-  LJsonPair : TJSONPair;
-begin
-    LJsonPair := (AObject as TJSONObject).Get(AName);
-    if LJsonPair <> nil then
-        Result := LJsonPair.JsonValue.Value
-    else
-        Result := ADefaultValue;
-end;
-
-
 { TFormMain }
 
-procedure TFormMain.FormCreate(Sender: TObject);
-begin
-    ParseProvider.ApplicationID := MEMBERFOLLOWUP_PARSE_APPLICATIONID;
-    ParseProvider.RestApiKey    := MEMBERFOLLOWUP_PARSE_RESTAPIKEY;
-
-    FAreas        := TAreaCollection.Create(ParseProvider.ProviderID, BackendStorage);
-    FMemberGroups := TMemberGroupCollection.Create(ParseProvider.ProviderID, BackendStorage);
-    FFollowupers  := TFollowuperCollection.Create(ParseProvider.ProviderID, BackendStorage);
-end;
-
-procedure TFormMain.FormDestroy(Sender: TObject);
-begin
-    FFollowupers.Free;
-    FMemberGroups.Free;
-    FAreas.Free;
-end;
-
-procedure TFormMain.ActionAddFamilyExecute(Sender: TObject);
-var
-  LWindow : TFormEditMemberGroup;
-begin
-    LWindow := TFormEditMemberGroup.Create(Self);
-    try
-        LWindow.OnAddItem := ProcessMemberGroupOnAddEvent;
-        LWindow.ShowModal;
-    finally
-        LWindow.Free;
-    end;
-end;
-
-procedure TFormMain.ListBox1Change(Sender: TObject);
-begin
-    ActionEditFamily.Enabled   := (ListBox1.Selected <> nil);
-    ActionDeleteFamily.Enabled := (ListBox1.Selected <> nil);
-end;
-
-procedure TFormMain.ListBox1DblClick(Sender: TObject);
-begin
-    ActionEditFamily.Execute;
-end;
-
-procedure TFormMain.ProcessMemberGroupOnAddEvent(ASender: TObject; const AItem: TBaasItem);
-begin
-    FMemberGroups.AddBackendItem(AItem);
-end;
-
-procedure TFormMain.ProcessMemberGroupOnUpdateEvent(ASender: TObject; const AItem: TBaasItem);
-begin
-    FMemberGroups.UpdateBackendItem(AItem);
-end;
-
-procedure TFormMain.ActionDeleteFamilyExecute(Sender: TObject);
-begin
-    try
-        FMemberGroups.DeleteBackendItem(Listbox1.Selected.Data as TMemberGroup);
-        ListBox1.Items.Delete(Listbox1.Selected.Index);
-    except
-        on E: Exception do
-            ShowMessage('Error deleting Family ('+ E.Message +')');
-    end;
-end;
-
-procedure TFormMain.ActionEditFamilyExecute(Sender: TObject);
+procedure TFormMain.ActionNewMemberGroupsExecute(Sender: TObject);
 var
   LWindow : TFormEditMemberGroup;
 begin
     LWindow := TFormEditMemberGroup.Create(Self);
     try
         LWindow.OnUpdateItem := ProcessMemberGroupOnUpdateEvent;
-        LWindow.Item := Listbox1.Selected.Data as TMemberGroup;
         LWindow.ShowModal;
     finally
         LWindow.Free;
     end;
 end;
 
-procedure TFormMain.ActionRefreshFamilyExecute(Sender: TObject);
-var
-  LMemberGroup : TMemberGroup;
-  LListBoxItem : TListBoxItem;
+procedure TFormMain.ListBoxAreasChange(Sender: TObject);
+begin
+    ActionEditAreas.Enabled   := (ListBoxAreas.Selected <> nil);
+    ActionDeleteAreas.Enabled := (ListBoxAreas.Selected <> nil);
+end;
+
+procedure TFormMain.ListBoxAreasDblClick(Sender: TObject);
+begin
+    ActionEditAreas.Execute;
+end;
+
+procedure TFormMain.ListBoxFollowupersChange(Sender: TObject);
+begin
+    ActionEditFollowuper.Enabled    := (ListBoxFollowupers.Selected <> nil);
+    ActionDeleteFollowupers.Enabled := (ListBoxFollowupers.Selected <> nil);
+end;
+
+procedure TFormMain.ListBoxFollowupersDblClick(Sender: TObject);
+begin
+    ActionEditFollowuper.Execute;
+end;
+
+procedure TFormMain.ListBoxMemberGroupsChange(Sender: TObject);
+begin
+    ActionEditMemberGroups.Enabled   := (ListBoxMemberGroups.Selected <> nil);
+    ActionDeleteMemberGroups.Enabled := (ListBoxMemberGroups.Selected <> nil);
+end;
+
+procedure TFormMain.ListBoxMemberGroupsDblClick(Sender: TObject);
+begin
+    ActionEditMemberGroups.Execute;
+end;
+
+procedure TFormMain.ListBoxMembersChange(Sender: TObject);
+begin
+    ActionEditMember.Enabled    := (ListBoxMembers.Selected <> nil);
+    ActionDeleteMembers.Enabled := (ListBoxMembers.Selected <> nil);
+end;
+
+procedure TFormMain.ListBoxMembersDblClick(Sender: TObject);
+begin
+    ActionEditMember.Execute;
+end;
+
+procedure TFormMain.ProcessMemberGroupOnUpdateEvent(ASender: TObject; const EventType: TBaasItemNotifyEventType; const AItem: TBaasItem);
+begin
+    case EventType of
+      Add:    TMemberFollowUpClasses.GetInstance.MemberGroups.AddBackendItem(AItem);
+      Update: TMemberFollowUpClasses.GetInstance.MemberGroups.UpdateBackendItem(AItem);
+    end;
+    ActionRefreshMemberGroups.Execute;
+end;
+
+procedure TFormMain.ActionDeleteAreasExecute(Sender: TObject);
 begin
     try
-        FAreas.Refresh;
-        FMemberGroups.Refresh;
-
-        ListBox1.Clear;
-        for LMemberGroup in FMemberGroups do
+        if MessageDlg('Are you sure you want to delete the selected item(s)', TMsgDlgType.mtConfirmation, [TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo], 0) = mrYes then
         begin
-            LListBoxItem := TListBoxItem.Create(nil);
-            LListBoxItem.Parent                   := ListBox1;
-            LListBoxItem.StyleLookup              := 'ListBoxItem1Style1';
-            LListBoxItem.Text                     := LMemberGroup.Name +' ('+ LMemberGroup.HeadName +')';
-            LListBoxItem.StylesData['detailtext'] := LMemberGroup.FullAddress;
-            LListBoxItem.Data                     := LMemberGroup;
+            TMemberFollowUpClasses.GetInstance.Areas.DeleteBackendItem(ListBoxAreas.Selected.Data as TBaasItem);
+            ListBoxAreas.Items.Delete(ListBoxAreas.Selected.Index);
         end;
+    except
+        on E: Exception do
+            ShowMessage('Error deleting Area ('+ E.Message +')');
+    end;
+end;
+
+procedure TFormMain.ActionDeleteFollowupersExecute(Sender: TObject);
+begin
+    try
+        if MessageDlg('Are you sure you want to delete the selected item(s)', TMsgDlgType.mtConfirmation, [TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo], 0) = mrYes then
+        begin
+            TMemberFollowUpClasses.GetInstance.Followupers.DeleteBackendItem(ListBoxFollowupers.Selected.Data as TBaasItem);
+            ListBoxFollowupers.Items.Delete(ListBoxFollowupers.Selected.Index);
+        end;
+    except
+        on E: Exception do
+            ShowMessage('Error deleting Member Group ('+ E.Message +')');
+    end;
+end;
+
+procedure TFormMain.ActionDeleteMemberGroupsExecute(Sender: TObject);
+begin
+    try
+        if MessageDlg('Are you sure you want to delete the selected item(s)', TMsgDlgType.mtConfirmation, [TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo], 0) = mrYes then
+        begin
+            TMemberFollowUpClasses.GetInstance.MemberGroups.DeleteBackendItem(ListBoxMemberGroups.Selected.Data as TBaasItem);
+            ListBoxMemberGroups.Items.Delete(ListBoxMemberGroups.Selected.Index);
+        end;
+    except
+        on E: Exception do
+            ShowMessage('Error deleting Member Group ('+ E.Message +')');
+    end;
+end;
+
+procedure TFormMain.ActionDeleteMembersExecute(Sender: TObject);
+begin
+    try
+        if MessageDlg('Are you sure you want to delete the selected item(s)', TMsgDlgType.mtConfirmation, [TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo], 0) = mrYes then
+        begin
+            TMemberFollowUpClasses.GetInstance.Members.DeleteBackendItem(ListBoxMembers.Selected.Data as TBaasItem);
+            ListBoxMembers.Items.Delete(ListBoxMembers.Selected.Index);
+        end;
+    except
+        on E: Exception do
+            ShowMessage('Error deleting Member ('+ E.Message +')');
+    end;
+end;
+
+procedure TFormMain.ActionEditMemberGroupsExecute(Sender: TObject);
+var
+  LWindow : TFormEditMemberGroup;
+begin
+    LWindow := TFormEditMemberGroup.Create(Self);
+    try
+        LWindow.OnUpdateItem := ProcessMemberGroupOnUpdateEvent;
+        LWindow.Item := ListBoxMemberGroups.Selected.Data as TBaasItem;
+        LWindow.ShowModal;
+    finally
+        LWindow.Free;
+    end;
+end;
+
+procedure TFormMain.ActionRefreshFollowupersExecute(Sender: TObject);
+
+    procedure AddItem(AListBox: TListBox; const AItem: TFollowuper);
+    var
+      LListBoxItem : TListBoxItem;
+    begin
+        LListBoxItem := TListBoxItem.Create(nil);
+        LListBoxItem.Parent                   := AListBox;
+        LListBoxItem.StyleLookup              := 'ListBoxItem1Style1';
+        LListBoxItem.Text                     := AItem.Name +' ('+ AItem.ContactNumber +')';
+        LListBoxItem.StylesData['detailtext'] := IFThen(AItem.Active, 'Active', 'Not Active');
+        LListBoxItem.Data                     := AItem;
+    end;
+
+var
+  LItem : TFollowuper;
+begin
+    try
+        ListBoxFollowupers.Clear;
+        for LItem in TMemberFollowUpClasses.GetInstance.Followupers do
+            AddItem(ListBoxFollowupers, LItem);
     except
         on E: Exception do
             ShowMessage('Error refreshing Families ('+ E.Message +')');
     end;
+end;
+
+procedure TFormMain.ActionRefreshAreasExecute(Sender: TObject);
+
+    procedure AddItem(AListBox: TListBox; const AItem: TAreaItem);
+    var
+      LListBoxItem : TListBoxItem;
+    begin
+        LListBoxItem := TListBoxItem.Create(nil);
+        LListBoxItem.Parent      := AListBox;
+//        LListBoxItem.StyleLookup := 'ListBoxItem1Style1';
+        LListBoxItem.Text        := AItem.Name;
+        LListBoxItem.Data        := AItem;
+    end;
+
+var
+  LItem : TAreaItem;
+begin
+    try
+        ListBoxAreas.Clear;
+        for LItem in TMemberFollowUpClasses.GetInstance.Areas do
+            AddItem(ListBoxAreas, LItem);
+    except
+        on E: Exception do
+            ShowMessage('Error refreshing Families ('+ E.Message +')');
+    end;
+end;
+
+procedure TFormMain.ActionRefreshMemberGroupsExecute(Sender: TObject);
+
+    procedure AddItem(AListBox: TListBox; const AItem: TMemberGroup);
+    var
+      LListBoxItem : TListBoxItem;
+    begin
+        LListBoxItem := TListBoxItem.Create(nil);
+        LListBoxItem.Parent                   := AListBox;
+        LListBoxItem.StyleLookup              := 'ListBoxItem1Style1';
+        LListBoxItem.Text                     := AItem.Name +' ('+ AItem.HeadName +')';
+        LListBoxItem.StylesData['detailtext'] := AItem.FullAddress;
+        LListBoxItem.Data                     := AItem;
+    end;
+
+var
+  LItem : TMemberGroup;
+begin
+    try
+        ListBoxMemberGroups.Clear;
+        for LItem in TMemberFollowUpClasses.GetInstance.MemberGroups do
+            AddItem(ListBoxMemberGroups, LItem);
+    except
+        on E: Exception do
+            ShowMessage('Error refreshing Families ('+ E.Message +')');
+    end;
+end;
+
+procedure TFormMain.ActionRefreshMembersExecute(Sender: TObject);
+
+    procedure AddItem(AListBox: TListBox; const AItem: TMember);
+    var
+      LListBoxItem : TListBoxItem;
+    begin
+        LListBoxItem := TListBoxItem.Create(nil);
+        LListBoxItem.Parent                   := AListBox;
+        LListBoxItem.StyleLookup              := 'ListBoxItem1Style1';
+        LListBoxItem.Text                     := AItem.Surname +', '+ AItem.Name +' ('+ AItem.MobilePhone +')';
+        LListBoxItem.StylesData['detailtext'] := AItem.EmailAddress;
+        LListBoxItem.Data                     := AItem;
+    end;
+
+var
+  LItem : TMember;
+begin
+    try
+        ListBoxMembers.Clear;
+        for LItem in TMemberFollowUpClasses.GetInstance.Members do
+            AddItem(ListBoxMembers, LItem);
+    except
+        on E: Exception do
+            ShowMessage('Error refreshing Families ('+ E.Message +')');
+    end;
+
+end;
+
+procedure TFormMain.FormShow(Sender: TObject);
+begin
+    TMemberFollowUpClasses.GetInstance.Areas.Refresh;
+    TMemberFollowUpClasses.GetInstance.MemberGroups.Refresh;
+    TMemberFollowUpClasses.GetInstance.Followupers.Refresh;
+    TMemberFollowUpClasses.GetInstance.Members.Refresh;
 end;
 
 end.

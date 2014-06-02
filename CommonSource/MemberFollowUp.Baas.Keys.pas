@@ -2,16 +2,27 @@ unit MemberFollowUp.Baas.Keys;
 
 interface
 
+{$include 'Source\ApplicationSettings.inc'}
+
 { WARNING: DO NOT INCLUDE THIS IN THE REPOSITORY COMMITS THIS IS YOUR APPLICATION SPECIFIC SETTINGS }
 
-const
-  MEMBERFOLLOWUP_PARSE_APPLICATIONID = 'xC5gDkiH6d3gjlmoU8PeowZiND4PxF3oOwuOEP2w';
-//  MEMBERFOLLOWUP_PARSE_MASTERKEY     = '';
-  MEMBERFOLLOWUP_PARSE_RESTAPIKEY    = 'MiVqXaD5TMac355FZDOEpaDksVCdHRcXtxEt21WK';
+{$IFDEF PARSE}
+type
+  TApplicationKeys = record
+//    public const PROVIDER_ID   = 'Parse';
+    public const APPLICATIONID = 'xC5gDkiH6d3gjlmoU8PeowZiND4PxF3oOwuOEP2w';
+    public const RESTAPIKEY    = 'MiVqXaD5TMac355FZDOEpaDksVCdHRcXtxEt21WK';
+  end;
+{$ENDIF}
 
-
-//const
-//  MEMBERFOLLOWUP_KINVEY_
+{$IFDEF KINVEY}
+type
+  TApplicationKeys = record
+//    public const PROVIDER_ID   = 'Kinvey';
+    public const APPLICATIONID = '';
+    public const MASTERKEY     = '';
+  end;
+{$ENDIF}
 
 
 implementation

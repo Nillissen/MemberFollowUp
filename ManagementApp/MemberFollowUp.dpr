@@ -1,7 +1,6 @@
 program MemberFollowUp;
 
 uses
-  madExcept,
   FMX.Forms,
   UnitFormEditMemberGroup in 'Source\UnitFormEditMemberGroup.pas' {FormEditMemberGroup},
   UnitFormMain in 'Source\UnitFormMain.pas' {FormMain},
@@ -9,7 +8,9 @@ uses
   MemberFollowUp.Baas.Base in '..\CommonSource\MemberFollowUp.Baas.Base.pas',
   MemberFollowUp.Baas.Areas in '..\CommonSource\MemberFollowUp.Baas.Areas.pas',
   MemberFollowUp.Baas.Keys in '..\CommonSource\MemberFollowUp.Baas.Keys.pas',
-  MemberFollowUp.Baas.Followupers in '..\CommonSource\MemberFollowUp.Baas.Followupers.pas';
+  MemberFollowUp.Baas.Followupers in '..\CommonSource\MemberFollowUp.Baas.Followupers.pas',
+  MemberFollowUp.Baas.Classes in '..\CommonSource\MemberFollowUp.Baas.Classes.pas',
+  MemberFollowUp.Baas.Members in '..\CommonSource\MemberFollowUp.Baas.Members.pas';
 
 {$R *.res}
 

@@ -11,14 +11,14 @@ uses
 type
   TMemberGroup = class(TBaasItem)
   strict private
-    FName        : String;
-    FAreaObject  : TBackendMetaObject;
-    FHeadName    : String;
-    FHomePhone   : String;
-    FAddress     : String;
-    FSuburb      : String;
-    FPostCode    : String;
-    FNoHomeVisit : Boolean;
+    FName         : String;
+    FAreaObjectId : String;
+    FHeadName     : String;
+    FHomePhone    : String;
+    FAddress      : String;
+    FSuburb       : String;
+    FPostCode     : String;
+    FNoHomeVisit  : Boolean;
 
   protected
     const BackendClassName = 'MemberGroups';
@@ -36,7 +36,7 @@ type
     function FullAddress: String;
 
     property Name : String read FName write FName;
-    property AreaObject : TBackendMetaObject read FAreaObject write FAreaObject;
+    property areaObjectId : String read FAreaObjectId write FAreaObjectId;
     property HeadName : String read FHeadName write FHeadName;
     property HomePhone : String read FHomePhone write FHomePhone;
     property Address : String read FAddress write FAddress;

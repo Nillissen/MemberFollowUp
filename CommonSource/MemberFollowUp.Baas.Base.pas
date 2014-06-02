@@ -17,11 +17,12 @@ type
 type
   TBaasItemCollection<TValue: TBaasItem, constructor> = class
   private
-    FProviderId     : string;
-    FBackendStorage : TBackendStorage;
     FBackendList    : TBackendObjectList<TValue>;
 
   protected
+    FProviderId     : string;
+    FBackendStorage : TBackendStorage;
+
     procedure DoLoadItems(const AQuery: TArray<string>);
 
   public
@@ -30,20 +31,23 @@ type
 
     procedure Refresh; virtual; abstract;
 
-    procedure AddBackendItem(const AItem: TValue);
-    procedure UpdateBackendItem(const AItem: TValue);
-    procedure DeleteBackendItem(const AItem: TValue);
+    procedure AddBackendItem(const AItem: TBaasItem);
+    procedure UpdateBackendItem(const AItem: TBaasItem);
+    procedure DeleteBackendItem(const AItem: TBaasItem);
 
     function GetEnumerator: TEnumerator<TValue>;
   end;
 
 type
-  TBassItemNotifyEventType = (Add, Update, Delete);
+  TBaasItemNotifyEventType = (Add, Update, Delete);
 type
-  TBaasItemNotify = procedure(ASender: TObject; const EventType: TBassItemNotifyEventType; const AItem: TBaasItem) of object;
+  TBaasItemNotify = procedure(ASender: TObject; const EventType: TBaasItemNotifyEventType; const AItem: TBaasItem) of object;
 
 
 implementation
+
+uses
+  MemberFollowUp.Baas.Keys;
 
 
 { TBaasItemCollection }
@@ -76,7 +80,7 @@ begin
     end;
 end;
 
-procedure TBaasItemCollection<TValue>.AddBackendItem(const AItem: TValue);
+procedure TBaasItemCollection<TValue>.AddBackendItem(const AItem: TBaasItem);
 var
   LEntity: TBackendEntityValue;
 begin
@@ -84,21 +88,21 @@ begin
     FBackendList.Add(AItem, LEntity);
 end;
 
-procedure TBaasItemCollection<TValue>.DeleteBackendItem(const AItem: TValue);
-var
-  LEntity : TBackendEntityValue;
-begin
-    LEntity := FBackendList.EntityValues[AItem];
-    FBackendStorage.Storage.DeleteObject(LEntity);
-end;
-
-procedure TBaasItemCollection<TValue>.UpdateBackendItem(const AItem: TValue);
+procedure TBaasItemCollection<TValue>.UpdateBackendItem(const AItem: TBaasItem);
 var
   LEntity: TBackendEntityValue;
   LUpdate: TBackendEntityValue;
 begin
     LEntity := FBackendList.EntityValues[AItem];
     FBackendStorage.Storage.UpdateObject<TValue>(LEntity, AItem, LUpdate);
+end;
+
+procedure TBaasItemCollection<TValue>.DeleteBackendItem(const AItem: TBaasItem);
+var
+  LEntity : TBackendEntityValue;
+begin
+    LEntity := FBackendList.EntityValues[AItem];
+    FBackendStorage.Storage.DeleteObject(LEntity);
 end;
 
 function TBaasItemCollection<TValue>.GetEnumerator: TEnumerator<TValue>;
