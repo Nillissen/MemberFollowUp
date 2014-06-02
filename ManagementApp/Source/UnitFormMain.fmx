@@ -27,12 +27,22 @@ object FormMain: TFormMain
     TabIndex = 0
     TabOrder = 5
     Width = 883.000000000000000000
-    object TabItem1: TTabItem
+    object TabItemAreas: TTabItem
       CustomIcon = <
         item
         end>
       Height = 24.000000000000000000
       IsSelected = True
+      TabOrder = 0
+      Text = 'Areas'
+      Width = 46.000000000000000000
+    end
+    object TabItemFamilies: TTabItem
+      CustomIcon = <
+        item
+        end>
+      Height = 24.000000000000000000
+      IsSelected = False
       TabOrder = 0
       Text = 'Families'
       Width = 59.000000000000000000
@@ -122,17 +132,7 @@ object FormMain: TFormMain
         end
       end
     end
-    object TabItem2: TTabItem
-      CustomIcon = <
-        item
-        end>
-      Height = 24.000000000000000000
-      IsSelected = False
-      TabOrder = 0
-      Text = 'Persons'
-      Width = 58.000000000000000000
-    end
-    object TabItem3: TTabItem
+    object TabItemPersons: TTabItem
       CustomIcon = <
         item
         end>
@@ -142,7 +142,17 @@ object FormMain: TFormMain
       Text = 'Members'
       Width = 67.000000000000000000
     end
-    object Followups: TTabItem
+    object TabItemFollowupers: TTabItem
+      CustomIcon = <
+        item
+        end>
+      Height = 24.000000000000000000
+      IsSelected = False
+      TabOrder = 0
+      Text = 'Followupers'
+      Width = 81.000000000000000000
+    end
+    object TabItemFollowups: TTabItem
       CustomIcon = <
         item
         end>
@@ -1620,13 +1630,6 @@ object FormMain: TFormMain
     Left = 32
     Top = 520
   end
-  object BackendQuery: TBackendQuery
-    Provider = ParseProvider
-    BackendClassName = 'Families'
-    BackendService = 'Storage'
-    Left = 128
-    Top = 432
-  end
   object ActionList: TActionList
     Left = 826
     Top = 515
@@ -1652,6 +1655,6 @@ object FormMain: TFormMain
   object BackendStorage: TBackendStorage
     Provider = ParseProvider
     Left = 122
-    Top = 523
+    Top = 515
   end
 end

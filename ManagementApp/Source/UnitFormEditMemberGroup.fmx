@@ -1,4 +1,4 @@
-object FormFamilyEdit: TFormFamilyEdit
+object FormEditMemberGroup: TFormEditMemberGroup
   Left = 0
   Top = 0
   BorderStyle = Single

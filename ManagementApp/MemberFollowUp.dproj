@@ -100,16 +100,17 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="Source\UnitFormFamilyEdit.pas">
-            <Form>FormFamilyEdit</Form>
+        <DCCReference Include="Source\UnitFormEditMemberGroup.pas">
+            <Form>FormEditMemberGroup</Form>
         </DCCReference>
         <DCCReference Include="Source\UnitFormMain.pas">
             <Form>FormMain</Form>
         </DCCReference>
-        <DCCReference Include="..\CommonSource\MemberFollowUp.Baas.Families.pas"/>
+        <DCCReference Include="..\CommonSource\MemberFollowUp.Baas.MemberGroups.pas"/>
         <DCCReference Include="..\CommonSource\MemberFollowUp.Baas.Base.pas"/>
         <DCCReference Include="..\CommonSource\MemberFollowUp.Baas.Areas.pas"/>
         <DCCReference Include="..\CommonSource\MemberFollowUp.Baas.Keys.pas"/>
+        <DCCReference Include="..\CommonSource\MemberFollowUp.Baas.Followupers.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

@@ -10,23 +10,25 @@ uses
   REST.Backend.ParseServices, FMX.ListView.Types, FMX.ListView,
   Data.Bind.Components, Data.Bind.ObjectScope, REST.Backend.BindSource,
   REST.Backend.ServiceComponents, FMX.Layouts, FMX.Memo, FMX.TabControl,
-  FMX.Edit, UnitFormFamilyEdit, System.Actions, FMX.ActnList, FMX.Menus, FMX.ListBox,
+  FMX.Edit, System.Actions, FMX.ActnList, FMX.Menus, FMX.ListBox,
   REST.Backend.Providers,
   //  member followup includes...
   MemberFollowUp.Baas.Keys,
   MemberFollowUp.Baas.Areas,
-  MemberFollowUp.Baas.Families;
+  MemberFollowUp.Baas.MemberGroups,
+  MemberFollowUp.Baas.Followupers,
+  //  local includes...
+  UnitFormEditMemberGroup;
 
 
 type
   TFormMain = class(TForm)
     ParseProvider: TParseProvider;
-    BackendQuery: TBackendQuery;
     TabControl1: TTabControl;
-    TabItem1: TTabItem;
-    TabItem2: TTabItem;
-    Followups: TTabItem;
-    TabItem3: TTabItem;
+    TabItemFamilies: TTabItem;
+    TabItemPersons: TTabItem;
+    TabItemFollowups: TTabItem;
+    TabItemFollowupers: TTabItem;
     Panel1: TPanel;
     ButtonRefreshFamilies: TButton;
     ButtonAddFamily: TButton;
@@ -46,6 +48,7 @@ type
     StyleBook: TStyleBook;
     ListBox1: TListBox;
     SearchBox1: TSearchBox;
+    TabItemAreas: TTabItem;
     procedure ActionEditFamilyExecute(Sender: TObject);
     procedure ActionAddFamilyExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -55,11 +58,12 @@ type
     procedure ListBox1Change(Sender: TObject);
     procedure ActionDeleteFamilyExecute(Sender: TObject);
   private
-    FAreas    : TAreaCollection;
-    FFamilies : TFamilyCollection;
+    FAreas        : TAreaCollection;
+    FMemberGroups : TMemberGroupCollection;
+    FFollowupers  : TFollowuperCollection;
 
-    procedure ProcessFamilyOnAddEvent(ASender: TObject; const AItem: TFamilyItem);
-    procedure ProcessFamilyOnUpdateEvent(ASender: TObject; const AItem: TFamilyItem);
+    procedure ProcessMemberGroupOnAddEvent(ASender: TObject; const AItem: TBaasItem);
+    procedure ProcessMemberGroupOnUpdateEvent(ASender: TObject; const AItem: TBaasItem);
   end;
 
 var
@@ -87,26 +91,27 @@ end;
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
     ParseProvider.ApplicationID := MEMBERFOLLOWUP_PARSE_APPLICATIONID;
-    ParseProvider.MasterKey     := MEMBERFOLLOWUP_PARSE_MASTERKEY;
     ParseProvider.RestApiKey    := MEMBERFOLLOWUP_PARSE_RESTAPIKEY;
 
-    FAreas    := TAreaCollection.Create(ParseProvider.ProviderID, BackendStorage);
-    FFamilies := TFamilyCollection.Create(ParseProvider.ProviderID, BackendStorage);
+    FAreas        := TAreaCollection.Create(ParseProvider.ProviderID, BackendStorage);
+    FMemberGroups := TMemberGroupCollection.Create(ParseProvider.ProviderID, BackendStorage);
+    FFollowupers  := TFollowuperCollection.Create(ParseProvider.ProviderID, BackendStorage);
 end;
 
 procedure TFormMain.FormDestroy(Sender: TObject);
 begin
-    FFamilies.Free;
+    FFollowupers.Free;
+    FMemberGroups.Free;
     FAreas.Free;
 end;
 
 procedure TFormMain.ActionAddFamilyExecute(Sender: TObject);
 var
-  LWindow : TFormFamilyEdit;
+  LWindow : TFormEditMemberGroup;
 begin
-    LWindow := TFormFamilyEdit.Create(Self);
+    LWindow := TFormEditMemberGroup.Create(Self);
     try
-        LWindow.OnAddItem := ProcessFamilyOnAddEvent;
+        LWindow.OnAddItem := ProcessMemberGroupOnAddEvent;
         LWindow.ShowModal;
     finally
         LWindow.Free;
@@ -124,20 +129,20 @@ begin
     ActionEditFamily.Execute;
 end;
 
-procedure TFormMain.ProcessFamilyOnAddEvent(ASender: TObject; const AItem: TFamilyItem);
+procedure TFormMain.ProcessMemberGroupOnAddEvent(ASender: TObject; const AItem: TBaasItem);
 begin
-    FFamilies.AddBackendItem(AItem);
+    FMemberGroups.AddBackendItem(AItem);
 end;
 
-procedure TFormMain.ProcessFamilyOnUpdateEvent(ASender: TObject; const AItem: TFamilyItem);
+procedure TFormMain.ProcessMemberGroupOnUpdateEvent(ASender: TObject; const AItem: TBaasItem);
 begin
-    FFamilies.UpdateBackendItem(AItem);
+    FMemberGroups.UpdateBackendItem(AItem);
 end;
 
 procedure TFormMain.ActionDeleteFamilyExecute(Sender: TObject);
 begin
     try
-        FFamilies.DeleteBackendItem(Listbox1.Selected.Data as TFamilyItem);
+        FMemberGroups.DeleteBackendItem(Listbox1.Selected.Data as TMemberGroup);
         ListBox1.Items.Delete(Listbox1.Selected.Index);
     except
         on E: Exception do
@@ -147,12 +152,12 @@ end;
 
 procedure TFormMain.ActionEditFamilyExecute(Sender: TObject);
 var
-  LWindow : TFormFamilyEdit;
+  LWindow : TFormEditMemberGroup;
 begin
-    LWindow := TFormFamilyEdit.Create(Self);
+    LWindow := TFormEditMemberGroup.Create(Self);
     try
-        LWindow.OnUpdateItem := ProcessFamilyOnUpdateEvent;
-        LWindow.Item := Listbox1.Selected.Data as TFamilyItem;
+        LWindow.OnUpdateItem := ProcessMemberGroupOnUpdateEvent;
+        LWindow.Item := Listbox1.Selected.Data as TMemberGroup;
         LWindow.ShowModal;
     finally
         LWindow.Free;
@@ -161,21 +166,22 @@ end;
 
 procedure TFormMain.ActionRefreshFamilyExecute(Sender: TObject);
 var
-  LFamilyItem  : TFamilyItem;
+  LMemberGroup : TMemberGroup;
   LListBoxItem : TListBoxItem;
 begin
     try
-        FFamilies.Refresh;
+        FAreas.Refresh;
+        FMemberGroups.Refresh;
 
         ListBox1.Clear;
-        for LFamilyItem in FFamilies do
+        for LMemberGroup in FMemberGroups do
         begin
             LListBoxItem := TListBoxItem.Create(nil);
-            LListBoxItem.Parent := ListBox1;
-            LListBoxItem.StyleLookup := 'ListBoxItem1Style1';
-            LListBoxItem.Text := LFamilyItem.Name +' ('+ LFamilyItem.HeadName +')';
-            LListBoxItem.StylesData['detailtext'] := LFamilyItem.FullAddress;
-            LListBoxItem.Data := LFamilyItem;
+            LListBoxItem.Parent                   := ListBox1;
+            LListBoxItem.StyleLookup              := 'ListBoxItem1Style1';
+            LListBoxItem.Text                     := LMemberGroup.Name +' ('+ LMemberGroup.HeadName +')';
+            LListBoxItem.StylesData['detailtext'] := LMemberGroup.FullAddress;
+            LListBoxItem.Data                     := LMemberGroup;
         end;
     except
         on E: Exception do

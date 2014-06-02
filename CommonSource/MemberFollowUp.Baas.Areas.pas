@@ -45,7 +45,7 @@ end;
 
 
 
-{ TFamilyCollection }
+{ TAreaCollection }
 
 procedure TAreaCollection.Refresh;
 var

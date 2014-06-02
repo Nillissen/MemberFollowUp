@@ -1,4 +1,4 @@
-unit UnitFormFamilyEdit;
+unit UnitFormEditMemberGroup;
 
 interface
 
@@ -11,14 +11,12 @@ uses
   Data.Bind.ObjectScope, REST.Backend.BindSource,
   REST.Backend.ServiceComponents, REST.Backend.Providers,
   //  member followup includes...
-  MemberFollowUp.Baas.Families;
+  MemberFollowUp.Baas.Base,
+  MemberFollowUp.Baas.MemberGroups;
+
 
 type
-  TFamilyOnNotify = procedure(ASender: TObject; const AItem: TFamilyItem) of object;
-//  TFamilyOnUpdateEvent = procedure(ASender: TObject; const AItem: TFamilyItem) of object;
-
-type
-  TFormFamilyEdit = class(TForm)
+  TFormEditMemberGroup = class(TForm)
     EditSurname: TEdit;
     EditHeadName: TEdit;
     EditHomePhone: TEdit;
@@ -39,16 +37,16 @@ type
     procedure FormCreate(Sender: TObject);
     procedure ButtonSaveClick(Sender: TObject);
   private
-    FSelectedItem : TFamilyItem;
+    FSelectedItem : TMemberGroup;
 
-    FOnAddItem    : TFamilyOnNotify;
-    FOnUpdateItem : TFamilyOnNotify;
+    FOnAddItem    : TBaasItemNotify;
+    FOnUpdateItem : TBaasItemNotify;
 
-    procedure SetSelectedItem(const AItem: TFamilyItem);
+    procedure SetSelectedItem(const AItem: TMemberGroup);
   public
-    property Item : TFamilyItem read FSelectedItem write SetSelectedItem;
-    property OnAddItem : TFamilyOnNotify read FOnAddItem write FOnAddItem;
-    property OnUpdateItem : TFamilyOnNotify read FOnUpdateItem write FOnUpdateItem;
+    property Item : TMemberGroup read FSelectedItem write SetSelectedItem;
+    property OnAddItem : TBaasItemNotify read FOnAddItem write FOnAddItem;
+    property OnUpdateItem : TBaasItemNotify read FOnUpdateItem write FOnUpdateItem;
   end;
 
 
@@ -59,19 +57,19 @@ implementation
 
 { TFormFamilyEdit }
 
-procedure TFormFamilyEdit.FormCreate(Sender: TObject);
+procedure TFormEditMemberGroup.FormCreate(Sender: TObject);
 begin
     FSelectedItem := nil;
     FOnAddItem    := nil;
     FOnUpdateItem := nil;
 end;
 
-procedure TFormFamilyEdit.ButtonSaveClick(Sender: TObject);
+procedure TFormEditMemberGroup.ButtonSaveClick(Sender: TObject);
 var
-  LItem : TFamilyItem;
+  LItem : TMemberGroup;
 begin
     if FSelectedItem = nil then
-        LItem := TFamilyItem.Create
+        LItem := TMemberGroup.Create
     else
         LItem := FSelectedItem;
 
@@ -84,22 +82,19 @@ begin
     LItem.NoHomeVisit  := CheckBoxNoHomeVisit.IsChecked;
 
     if FSelectedItem = nil then
-    begin
-        if Assigned(FOnAddItem) then
-            FOnAddItem(Self, LItem)
-    end else
-        if Assigned(FOnUpdateItem) then
-            FOnUpdateItem(Self, LItem);
+        FOnAddItem(Self, LItem)
+    else
+        FOnUpdateItem(Self, LItem);
 
     Self.Close;
 end;
 
-procedure TFormFamilyEdit.ButtonCancelClick(Sender: TObject);
+procedure TFormEditMemberGroup.ButtonCancelClick(Sender: TObject);
 begin
     Self.Close;
 end;
 
-procedure TFormFamilyEdit.SetSelectedItem(const AItem: TFamilyItem);
+procedure TFormEditMemberGroup.SetSelectedItem(const AItem: TMemberGroup);
 begin
     FSelectedItem := AItem;
 

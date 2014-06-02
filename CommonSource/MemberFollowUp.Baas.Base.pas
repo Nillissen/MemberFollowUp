@@ -37,6 +37,12 @@ type
     function GetEnumerator: TEnumerator<TValue>;
   end;
 
+type
+  TBassItemNotifyEventType = (Add, Update, Delete);
+type
+  TBaasItemNotify = procedure(ASender: TObject; const EventType: TBassItemNotifyEventType; const AItem: TBaasItem) of object;
+
+
 implementation
 
 
