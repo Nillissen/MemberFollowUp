@@ -23,7 +23,7 @@ object FormMain: TFormMain
     Margins.Top = 5.000000000000000000
     Margins.Right = 5.000000000000000000
     Margins.Bottom = 5.000000000000000000
-    TabIndex = 3
+    TabIndex = 1
     TabOrder = 5
     Width = 883.000000000000000000
     object TabItemAreas: TTabItem
@@ -180,7 +180,7 @@ object FormMain: TFormMain
         item
         end>
       Height = 24.000000000000000000
-      IsSelected = False
+      IsSelected = True
       TabOrder = 0
       Text = 'Families'
       Width = 59.000000000000000000
@@ -370,7 +370,7 @@ object FormMain: TFormMain
         item
         end>
       Height = 24.000000000000000000
-      IsSelected = True
+      IsSelected = False
       TabOrder = 0
       Text = 'Followupers'
       Width = 81.000000000000000000
@@ -483,6 +483,12 @@ object FormMain: TFormMain
       Enabled = False
     end
     object MenuItemSpacer1: TMenuItem
+      Text = '-'
+    end
+    object MenuItem15: TMenuItem
+      Text = 'Add New Member...'
+    end
+    object MenuItem14: TMenuItem
       Text = '-'
     end
     object MenuItem1: TMenuItem
@@ -1938,10 +1944,12 @@ object FormMain: TFormMain
     Top = 515
     object ActionNewAreas: TAction
       Text = 'New...'
+      OnExecute = ActionNewAreasExecute
     end
     object ActionEditAreas: TAction
       Text = 'Edit...'
       Enabled = False
+      OnExecute = ActionEditAreasExecute
     end
     object ActionDeleteAreas: TAction
       Text = 'Delete'
@@ -1972,10 +1980,12 @@ object FormMain: TFormMain
     end
     object ActionNewMember: TAction
       Text = 'New...'
+      OnExecute = ActionNewMemberExecute
     end
     object ActionEditMember: TAction
       Text = 'Edit...'
       Enabled = False
+      OnExecute = ActionEditMemberExecute
     end
     object ActionDeleteMembers: TAction
       Text = 'Delete'
@@ -1988,10 +1998,12 @@ object FormMain: TFormMain
     end
     object ActionNewFollowuper: TAction
       Text = 'New...'
+      OnExecute = ActionNewFollowuperExecute
     end
     object ActionEditFollowuper: TAction
       Text = 'Edit...'
       Enabled = False
+      OnExecute = ActionEditFollowuperExecute
     end
     object ActionDeleteFollowupers: TAction
       Text = 'Delete'

@@ -6,7 +6,7 @@ uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants, System.StrUtils,
   FMX.Types, FMX.Graphics, FMX.Objects, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
   FMX.ListView.Types, FMX.ListView, FMX.Layouts, FMX.Memo, FMX.TabControl,
-  FMX.Edit, System.Actions, FMX.ActnList, FMX.Menus, FMX.ListBox,
+  FMX.Edit, System.Actions, FMX.ActnList, FMX.Menus, FMX.ListBox, System.Generics.Collections,
   //  member followup includes...
   MemberFollowUp.Baas.Base,
   MemberFollowUp.Baas.Classes,
@@ -15,7 +15,10 @@ uses
   MemberFollowUp.Baas.MemberGroups,
   MemberFollowUp.Baas.Members,
   //  local includes...
-  UnitFormEditMemberGroup;
+  UnitFormEditArea,
+  UnitFormEditMemberGroup,
+  UnitFormEditMember,
+  UnitFormEditFollowuper;
 
 
 type
@@ -92,6 +95,8 @@ type
     MenuItem11: TMenuItem;
     MenuItem12: TMenuItem;
     MenuItem13: TMenuItem;
+    MenuItem14: TMenuItem;
+    MenuItem15: TMenuItem;
     procedure ActionEditMemberGroupsExecute(Sender: TObject);
     procedure ActionNewMemberGroupsExecute(Sender: TObject);
     procedure ActionRefreshMemberGroupsExecute(Sender: TObject);
@@ -111,8 +116,16 @@ type
     procedure ActionDeleteFollowupersExecute(Sender: TObject);
     procedure ListBoxFollowupersChange(Sender: TObject);
     procedure ListBoxFollowupersDblClick(Sender: TObject);
+    procedure ActionNewMemberExecute(Sender: TObject);
+    procedure ActionEditMemberExecute(Sender: TObject);
+    procedure ActionNewAreasExecute(Sender: TObject);
+    procedure ActionEditAreasExecute(Sender: TObject);
+    procedure ActionNewFollowuperExecute(Sender: TObject);
+    procedure ActionEditFollowuperExecute(Sender: TObject);
   private
-    procedure ProcessMemberGroupOnUpdateEvent(ASender: TObject; const EventType: TBaasItemNotifyEventType; const AItem: TBaasItem);
+    procedure DisplayBaasForm(AForm: TBaasForm; AItem: TBaasItem = nil);
+
+    procedure ProcessBaasItemOnUpdateEvent(ASender: TObject; const EventType: TBaasItemNotifyEventType; const AItem: TBaasItem);
   end;
 
 var
@@ -123,19 +136,58 @@ implementation
 {$R *.fmx}
 
 
+procedure TFormMain.DisplayBaasForm(AForm: TBaasForm; AItem: TBaasItem = nil);
+begin
+    try
+        AForm.OnUpdateItem := ProcessBaasItemOnUpdateEvent;
+        AForm.Item         := AItem;
+        AForm.ShowModal;
+    finally
+        AForm.Free;
+    end;
+end;
+
+
 { TFormMain }
 
-procedure TFormMain.ActionNewMemberGroupsExecute(Sender: TObject);
-var
-  LWindow : TFormEditMemberGroup;
+procedure TFormMain.ActionNewAreasExecute(Sender: TObject);
 begin
-    LWindow := TFormEditMemberGroup.Create(Self);
-    try
-        LWindow.OnUpdateItem := ProcessMemberGroupOnUpdateEvent;
-        LWindow.ShowModal;
-    finally
-        LWindow.Free;
-    end;
+    DisplayBaasForm(TFormEditArea.Create(Self));
+end;
+
+procedure TFormMain.ActionEditAreasExecute(Sender: TObject);
+begin
+    DisplayBaasForm(TFormEditArea.Create(Self), ListBoxAreas.Selected.Data as TBaasItem);
+end;
+
+procedure TFormMain.ActionNewMemberExecute(Sender: TObject);
+begin
+    DisplayBaasForm(TFormEditMember.Create(Self));
+end;
+
+procedure TFormMain.ActionEditMemberExecute(Sender: TObject);
+begin
+    DisplayBaasForm(TFormEditMember.Create(Self), ListBoxMembers.Selected.Data as TBaasItem);
+end;
+
+procedure TFormMain.ActionNewMemberGroupsExecute(Sender: TObject);
+begin
+    DisplayBaasForm(TFormEditMemberGroup.Create(Self));
+end;
+
+procedure TFormMain.ActionEditMemberGroupsExecute(Sender: TObject);
+begin
+    DisplayBaasForm(TFormEditMemberGroup.Create(Self), ListBoxMemberGroups.Selected.Data as TBaasItem);
+end;
+
+procedure TFormMain.ActionNewFollowuperExecute(Sender: TObject);
+begin
+    DisplayBaasForm(TFormEditFollowuper.Create(Self));
+end;
+
+procedure TFormMain.ActionEditFollowuperExecute(Sender: TObject);
+begin
+    DisplayBaasForm(TFormEditFollowuper.Create(Self), ListBoxFollowupers.Selected.Data as TBaasItem);
 end;
 
 procedure TFormMain.ListBoxAreasChange(Sender: TObject);
@@ -182,13 +234,41 @@ begin
     ActionEditMember.Execute;
 end;
 
-procedure TFormMain.ProcessMemberGroupOnUpdateEvent(ASender: TObject; const EventType: TBaasItemNotifyEventType; const AItem: TBaasItem);
+procedure TFormMain.ProcessBaasItemOnUpdateEvent(ASender: TObject; const EventType: TBaasItemNotifyEventType; const AItem: TBaasItem);
 begin
-    case EventType of
-      Add:    TMemberFollowUpClasses.GetInstance.MemberGroups.AddBackendItem(AItem);
-      Update: TMemberFollowUpClasses.GetInstance.MemberGroups.UpdateBackendItem(AItem);
+    if AItem is TAreaItem then
+    begin
+        case EventType of
+          Add:    TMemberFollowUpClasses.GetInstance.Areas.AddBackendItem(AItem);
+          Update: TMemberFollowUpClasses.GetInstance.Areas.UpdateBackendItem(AItem);
+        end;
+        ActionRefreshAreas.Execute;
+
+    end else if AItem is TMember then
+    begin
+
+        case EventType of
+          Add:    TMemberFollowUpClasses.GetInstance.Members.AddBackendItem(AItem);
+          Update: TMemberFollowUpClasses.GetInstance.Members.UpdateBackendItem(AItem);
+        end;
+        ActionRefreshMembers.Execute;
+
+    end else if AItem is TMemberGroup then
+    begin
+        case EventType of
+          Add:    TMemberFollowUpClasses.GetInstance.MemberGroups.AddBackendItem(AItem);
+          Update: TMemberFollowUpClasses.GetInstance.MemberGroups.UpdateBackendItem(AItem);
+        end;
+        ActionRefreshMemberGroups.Execute;
+
+    end else if AItem is TFollowuper then
+    begin
+        case EventType of
+          Add:    TMemberFollowUpClasses.GetInstance.Followupers.AddBackendItem(AItem);
+          Update: TMemberFollowUpClasses.GetInstance.Followupers.UpdateBackendItem(AItem);
+        end;
+        ActionRefreshFollowupers.Execute;
     end;
-    ActionRefreshMemberGroups.Execute;
 end;
 
 procedure TFormMain.ActionDeleteAreasExecute(Sender: TObject);
@@ -244,20 +324,6 @@ begin
     except
         on E: Exception do
             ShowMessage('Error deleting Member ('+ E.Message +')');
-    end;
-end;
-
-procedure TFormMain.ActionEditMemberGroupsExecute(Sender: TObject);
-var
-  LWindow : TFormEditMemberGroup;
-begin
-    LWindow := TFormEditMemberGroup.Create(Self);
-    try
-        LWindow.OnUpdateItem := ProcessMemberGroupOnUpdateEvent;
-        LWindow.Item := ListBoxMemberGroups.Selected.Data as TBaasItem;
-        LWindow.ShowModal;
-    finally
-        LWindow.Free;
     end;
 end;
 

@@ -16,7 +16,7 @@ uses
 
 
 type
-  TFormEditMemberGroup = class(TForm)
+  TFormEditMemberGroup = class(TBaasForm)
     EditSurname: TEdit;
     EditHeadName: TEdit;
     EditHomePhone: TEdit;
@@ -34,18 +34,9 @@ type
     ButtonCancel: TButton;
     AniIndicator1: TAniIndicator;
     procedure ButtonCancelClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure ButtonSaveClick(Sender: TObject);
-  private
-    FSelectedItem : TMemberGroup;
-
-    FOnUpdateItem : TBaasItemNotify;
-
-    function GetSelectedItem: TBaasItem;
-    procedure SetSelectedItem(const AItem: TBaasItem);
-  public
-    property Item : TBaasItem read GetSelectedItem write SetSelectedItem;
-    property OnUpdateItem : TBaasItemNotify read FOnUpdateItem write FOnUpdateItem;
+  protected
+    procedure SetSelectedItem(const AItem: TBaasItem); override;
   end;
 
 
@@ -56,10 +47,22 @@ implementation
 
 { TFormFamilyEdit }
 
-procedure TFormEditMemberGroup.FormCreate(Sender: TObject);
+procedure TFormEditMemberGroup.SetSelectedItem(const AItem: TBaasItem);
 begin
-    FSelectedItem := nil;
-    FOnUpdateItem := nil;
+    inherited;
+    if AItem <> nil then
+    begin
+        Self.Caption    := 'Edit Member Family';
+        ButtonSave.Text := 'Update';
+
+        EditSurname.Text              := (AItem as TMemberGroup).Name;
+        EditHeadName.Text             := (AItem as TMemberGroup).HeadName;
+        EditHomePhone.Text            := (AItem as TMemberGroup).HomePhone;
+        EditAddress.Text              := (AItem as TMemberGroup).Address;
+        EditSuburb.Text               := (AItem as TMemberGroup).Suburb;
+        EditPostCode.Text             := (AItem as TMemberGroup).PostCode;
+        CheckBoxNoHomeVisit.IsChecked := (AItem as TMemberGroup).NoHomeVisit;
+    end;
 end;
 
 procedure TFormEditMemberGroup.ButtonSaveClick(Sender: TObject);
@@ -69,7 +72,7 @@ begin
     if FSelectedItem = nil then
         LItem := TMemberGroup.Create
     else
-        LItem := FSelectedItem;
+        LItem := FSelectedItem as TMemberGroup;
 
     LItem.Name         := EditSurname.Text;
     LItem.HeadName     := EditHeadName.Text;
@@ -90,27 +93,6 @@ end;
 procedure TFormEditMemberGroup.ButtonCancelClick(Sender: TObject);
 begin
     Self.Close;
-end;
-
-function TFormEditMemberGroup.GetSelectedItem: TBaasItem;
-begin
-    Result := FSelectedItem as TBaasItem;
-end;
-
-procedure TFormEditMemberGroup.SetSelectedItem(const AItem: TBaasItem);
-begin
-    FSelectedItem := AItem as TMemberGroup;
-
-    Self.Caption    := 'Edit Member Family';
-    ButtonSave.Text := 'Update';
-
-    EditSurname.Text              := FSelectedItem.Name;
-    EditHeadName.Text             := FSelectedItem.HeadName;
-    EditHomePhone.Text            := FSelectedItem.HomePhone;
-    EditAddress.Text              := FSelectedItem.Address;
-    EditSuburb.Text               := FSelectedItem.Suburb;
-    EditPostCode.Text             := FSelectedItem.PostCode;
-    CheckBoxNoHomeVisit.IsChecked := FSelectedItem.NoHomeVisit;
 end;
 
 end.

@@ -9,7 +9,6 @@ object FormEditMemberGroup: TFormEditMemberGroup
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop, iPhone, iPad]
-  OnCreate = FormCreate
   DesignerMobile = False
   DesignerWidth = 0
   DesignerHeight = 0

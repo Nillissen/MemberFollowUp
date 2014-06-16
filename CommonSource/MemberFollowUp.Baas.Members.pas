@@ -24,7 +24,7 @@ type
     class function BaasClassName: String; override;
 
     const NameElement                = 'Name';
-    const MemberGroupObjectIdElement = 'MemberGroup_ObjectId';
+    const MemberGroupObjectIdElement = 'MemberGroupObjectId';
     const SurnameElement             = 'Surname';
     const MobilePhoneElement         = 'MobilePhone';
     const DateOfBirthElement         = 'DateOfBirth';
@@ -34,7 +34,7 @@ type
   public
 
     property Name : String read FName write FName;
-    property MemberGroup_ObjectId : String read FMemberGroupObjectId write FMemberGroupObjectId;
+    property MemberGroupObjectId : String read FMemberGroupObjectId write FMemberGroupObjectId;
     property Surname : String read FSurname write FSurname;
     property MobilePhone : String read FMobilePhone write FMobilePhone;
     property DateOfBirth : String read FDateOfBirth write FDateOfBirth;
@@ -75,7 +75,7 @@ begin
         if SameText(FProviderID, TKinveyProvider.ProviderID) then
             LQuery := TArray<string>.Create(Format('sort=%s', [TMember.NameElement]))
         else if SameText(FProviderID, TParseProvider.ProviderID) then
-            LQuery := TArray<string>.Create(Format('order=%s', [TMember.NameElement]))
+            LQuery := TArray<string>.Create(Format('order=%s', [TMember.NameElement]), 'limit=1000')
         else
             raise Exception.Create('Unknown provider');
 

@@ -113,6 +113,18 @@
         <DCCReference Include="..\CommonSource\MemberFollowUp.Baas.Followupers.pas"/>
         <DCCReference Include="..\CommonSource\MemberFollowUp.Baas.Classes.pas"/>
         <DCCReference Include="..\CommonSource\MemberFollowUp.Baas.Members.pas"/>
+        <DCCReference Include="Source\UnitFormEditMember.pas">
+            <Form>FormEditMember</Form>
+            <FormType>fmx</FormType>
+        </DCCReference>
+        <DCCReference Include="Source\UnitFormEditArea.pas">
+            <Form>FormEditArea</Form>
+            <FormType>fmx</FormType>
+        </DCCReference>
+        <DCCReference Include="Source\UnitFormEditFollowuper.pas">
+            <Form>FormEditFollowuper</Form>
+            <FormType>fmx</FormType>
+        </DCCReference>
         <None Include="Source\ApplicationSettings.inc"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
